@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery of Memories</title>
+  <style>
+    /* Background & stars */
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #1e1e40, #5f3c82);
+      overflow-x: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+    }
+
+    canvas#stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 40px auto 10px;
+      font-size: 2.8em;
+      background: linear-gradient(90deg, #b3e5fc, #ce93d8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 30px;
+    }
+
+    .gallery img {
+      max-width: 300px;
+      border-radius: 16px;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      cursor: pointer;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Secret quote stars */
+    .secret-star {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      cursor: pointer;
+    }
+
+    .secret-star::after {
+      content: attr(data-quote);
+      position: absolute;
+      top: 25px;
+      left: -60px;
+      width: 150px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 8px;
+      border-radius: 10px;
+      font-size: 0.9em;
+      text-align: center;
+      display: none;
+      z-index: 10;
+    }
+
+    .secret-star:hover::after {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+
+  <h1>Gallery of Memories</h1>
+
+  <div class="gallery">
+    <!-- Add your image elements here -->
+    <img src="https://via.placeholder.com/300x200" alt="Memory 1" />
+    <img src="https://via.placeholder.com/300x200" alt="Memory 2" />
+    <img src="https://via.placeholder.com/300x200" alt="Memory 3" />
+  </div>
+
+  <!-- Secret Floating Quotes -->
+  <div class="secret-star" style="top: 150px; left: 80px;" data-quote="The moment we laughed until we cried 💫"></div>
+  <div class="secret-star" style="top: 400px; left: 200px;" data-quote="I still remember the wind that day 🌬️"></div>
+  <div class="secret-star" style="top: 600px; left: 350px;" data-quote="Venus was watching us, wasn't she? 🌟"></div>
+
+  <!-- Starfield Script -->
+  <script>
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+
+    let stars = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    for (let i = 0; i < 150; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5,
+        d: Math.random() * 1
+      });
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+      ctx.beginPath();
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        ctx.moveTo(s.x, s.y);
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2, true);
+      }
+      ctx.fill();
+      update();
+    }
+
+    function update() {
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        s.y += s.d;
+        if (s.y > canvas.height) {
+          s.y = 0;
+          s.x = Math.random() * canvas.width;
+        }
+      }
+    }
+
+    function animateStars() {
+      drawStars();
+      requestAnimationFrame(animateStars);
+    }
+
+    animateStars();
+  </script>
+</body>
+</html>
