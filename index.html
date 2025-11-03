@@ -2,158 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gallery of Memories</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oneth & Onithi – Time Capsule</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Raleway:wght@700&display=swap" rel="stylesheet">
   <style>
-    /* Background & stars */
-    body {
+    * {
       margin: 0;
       padding: 0;
-      background: linear-gradient(to bottom right, #1e1e40, #5f3c82);
-      overflow-x: hidden;
-      font-family: 'Segoe UI', sans-serif;
-      color: #fff;
+      box-sizing: border-box;
     }
 
-    canvas#stars {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #6a1f7c, #4b0082, #24243e);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+      font-family: 'Quicksand', sans-serif;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 40px 60px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      animation: fadeIn 2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h1 {
-      text-align: center;
-      margin: 40px auto 10px;
-      font-size: 2.8em;
-      background: linear-gradient(90deg, #b3e5fc, #ce93d8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-family: 'Raleway', sans-serif;
+      font-size: 2.8rem;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px #ffffffaa;
     }
 
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      padding: 30px;
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      opacity: 0.85;
     }
 
-    .gallery img {
-      max-width: 300px;
-      border-radius: 16px;
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-      cursor: pointer;
+    #countdown {
+      font-size: 2rem;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
     }
 
-    .gallery img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
-    }
-
-    /* Secret quote stars */
-    .secret-star {
-      position: absolute;
-      width: 15px;
-      height: 15px;
-      background: white;
-      border-radius: 50%;
-      opacity: 0.8;
-      cursor: pointer;
-    }
-
-    .secret-star::after {
-      content: attr(data-quote);
-      position: absolute;
-      top: 25px;
-      left: -60px;
-      width: 150px;
-      background: rgba(0, 0, 0, 0.8);
-      color: #fff;
-      padding: 8px;
-      border-radius: 10px;
-      font-size: 0.9em;
-      text-align: center;
+    .hidden-message {
       display: none;
-      z-index: 10;
-    }
-
-    .secret-star:hover::after {
-      display: block;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      animation: fadeIn 3s ease forwards;
     }
   </style>
 </head>
 <body>
-  <canvas id="stars"></canvas>
-
-  <h1>Gallery of Memories</h1>
-
-  <div class="gallery">
-    <!-- Add your image elements here -->
-    <img src="https://via.placeholder.com/300x200" alt="Memory 1" />
-    <img src="https://via.placeholder.com/300x200" alt="Memory 2" />
-    <img src="https://via.placeholder.com/300x200" alt="Memory 3" />
+  <div class="container">
+    <h1>Oneth & Onithi's Time Capsule</h1>
+    <p>Opening in:</p>
+    <div id="countdown"></div>
+    <div id="hidden-message" class="hidden-message">💫 *We made it.* The future is now. 💫</div>
   </div>
 
-  <!-- Secret Floating Quotes -->
-  <div class="secret-star" style="top: 150px; left: 80px;" data-quote="The moment we laughed until we cried 💫"></div>
-  <div class="secret-star" style="top: 400px; left: 200px;" data-quote="I still remember the wind that day 🌬️"></div>
-  <div class="secret-star" style="top: 600px; left: 350px;" data-quote="Venus was watching us, wasn't she? 🌟"></div>
-
-  <!-- Starfield Script -->
   <script>
-    const canvas = document.getElementById("stars");
-    const ctx = canvas.getContext("2d");
+    const countdown = document.getElementById('countdown');
+    const hiddenMsg = document.getElementById('hidden-message');
 
-    let stars = [];
+    const targetDate = new Date("January 6, 2030 00:00:00").getTime();
 
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
 
-    window.addEventListener("resize", resize);
-    resize();
-
-    for (let i = 0; i < 150; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.5,
-        d: Math.random() * 1
-      });
-    }
-
-    function drawStars() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "white";
-      ctx.beginPath();
-      for (let i = 0; i < stars.length; i++) {
-        const s = stars[i];
-        ctx.moveTo(s.x, s.y);
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2, true);
+      if (distance < 0) {
+        countdown.innerHTML = "🌟 It's time to open the capsule! 🌟";
+        hiddenMsg.style.display = "block";
+        return;
       }
-      ctx.fill();
-      update();
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdown.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 
-    function update() {
-      for (let i = 0; i < stars.length; i++) {
-        const s = stars[i];
-        s.y += s.d;
-        if (s.y > canvas.height) {
-          s.y = 0;
-          s.x = Math.random() * canvas.width;
-        }
-      }
-    }
-
-    function animateStars() {
-      drawStars();
-      requestAnimationFrame(animateStars);
-    }
-
-    animateStars();
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
   </script>
 </body>
 </html>
